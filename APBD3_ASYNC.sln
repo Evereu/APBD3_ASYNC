@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33829.357
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "APBD3_ASYNC", "APBD3_ASYNC\APBD3_ASYNC.csproj", "{C8485DD7-5607-463A-8EAC-9E10A91037B9}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C8485DD7-5607-463A-8EAC-9E10A91037B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C8485DD7-5607-463A-8EAC-9E10A91037B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C8485DD7-5607-463A-8EAC-9E10A91037B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C8485DD7-5607-463A-8EAC-9E10A91037B9}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3003F393-A4EC-4FD7-BB5D-93A24A581719}
+	EndGlobalSection
+EndGlobal
