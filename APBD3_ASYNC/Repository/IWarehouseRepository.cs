@@ -4,12 +4,11 @@ namespace APBD3_ASYNC.Repository
 {
     public interface IWarehouseRepository
     {
-        bool VerifyCompletedOrders(Warehouse warehouse);
-        bool VerifyExistingOrder(Warehouse warehouse);
-        bool VerifyExistingProduct(Warehouse warehouse);
-        bool VerifyExistingWarehouse(Warehouse warehouse);
-
-        decimal InsertNewOrder(Warehouse warehouse);
+        Task<bool> IsThatCompletedOrdersExist(Warehouse warehouse);
+        Task<bool> VerifyExistingOrder(Warehouse warehouse);
+        Task<bool> VerifyExistingProduct(Warehouse warehouse);
+        Task<bool> VerifyExistingWarehouse(Warehouse warehouse);
+        Task<decimal> InsertNewOrder(Warehouse warehouse);
 
     }
 }

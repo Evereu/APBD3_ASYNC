@@ -17,244 +17,187 @@ namespace APBD3_ASYNC.Repository
 
         }
 
-
-        //Sprawdzamy, czy to zamówienie zostało przypadkiem zrealizowane.
-        //Sprawdzamy, czy nie ma wiersza z danym IdOrder w tabeli Product_Warehouse.
-
-
-        public bool VerifyCompletedOrders(Warehouse warehouse)
+        public async Task<bool> IsThatCompletedOrdersExist(Warehouse warehouse)
         {
-            using (var connection = new SqlConnection(_configuration["ConnectionStrings:DefaultConnection"]))
-            {
-                connection.Open();
-                using (var command = new SqlCommand())
-                {
-                    command.Connection = connection;
+             await using var connection = new SqlConnection(_configuration["ConnectionStrings:DefaultConnection"]);
 
-                    command.CommandText = " IF EXISTS " +
-                        "(select * from [ApbdAsync].[dbo].[Product_Warehouse] " +
-                        "where IdOrder = (Select IdOrder from [ApbdAsync].[dbo].[Order] where IdProduct = @IdProduct and Amount = @Amount)) " +
-                        "BEGIN " +
-                        "SELECT 1 " +
-                        "END " +
-                        "ELSE " +
-                        "BEGIN " +
-                        "SELECT 2 " +
-                        "END";
+            await connection.OpenAsync();
 
-                    command.Parameters.AddWithValue("@IdProduct", warehouse.IdProduct);
-                    command.Parameters.AddWithValue("@Amount", warehouse.Amount);
+            await using var command = new SqlCommand();
+            command.Connection = connection;
 
-                    var queryResult = (int)command.ExecuteScalar();
+            command.CommandText = " IF EXISTS " +
+                "(select * from [ApbdAsync].[dbo].[Product_Warehouse] " +
+                "where IdOrder = (Select IdOrder from [ApbdAsync].[dbo].[Order] where IdProduct = @IdProduct and Amount = @Amount)) " +
+                "BEGIN " +
+                "SELECT 1 " +
+                "END " +
+                "ELSE " +
+                "BEGIN " +
+                "SELECT 2 " +
+                "END";
 
-                    var result = queryResult == 1 ? true : false;
+            command.Parameters.AddWithValue("@IdProduct", warehouse.IdProduct);
+            command.Parameters.AddWithValue("@Amount", warehouse.Amount);
 
-                    return result;
-                }
-            }
+            var queryResult = await command.ExecuteScalarAsync();
+
+            var result = (int)queryResult == 2;
+
+            return result;
         }
 
-
-
-
-        //Dlatego sprawdzamy, czy w
-        //tabeli Order istnieje rekord z IdProduktu i Ilością(Amount), które
-        //odpowiadają naszemu żądaniu.Data utworzenia zamówienia powinna
-        //być wcześniejsza niż data utworzenia w żądaniu.
-
-        public bool VerifyExistingOrder(Warehouse warehouse)
+        public async Task<bool> VerifyExistingOrder(Warehouse warehouse)
         {
-            using (var connection = new SqlConnection(_configuration["ConnectionStrings:DefaultConnection"]))
-            {
-                using (var command = new SqlCommand())
-                {
-                    command.Connection = connection;
+            using var connection = new SqlConnection(_configuration["ConnectionStrings:DefaultConnection"]);
 
-                    command.CommandText = "IF EXISTS " +
-                    "(SELECT * FROM [ApbdAsync].[dbo].[Order] " +
-                    "WHERE IdProduct = @IdProduct " +
-                    "AND Amount >= @Amount " +
-                    "AND CreatedAt < GETDATE()) " +
-                    "BEGIN " +
-                    "SELECT 1 " +
-                    "END " +
-                    "ELSE " +
-                    "BEGIN " +
-                    "SELECT 2 " +
-                    "END";
+            await connection.OpenAsync();
 
-                    command.Parameters.AddWithValue("@IdProduct", warehouse.IdProduct);
-                    command.Parameters.AddWithValue("@Amount", warehouse.Amount);
+            await using var command = new SqlCommand();
 
-                    var queryResult = (int)command.ExecuteScalar();
+            command.Connection = connection;
 
-                    var result = queryResult == 1 ? true : false;
+            command.CommandText = "IF EXISTS " +
+            "(SELECT * FROM [ApbdAsync].[dbo].[Order] " +
+            "WHERE IdProduct = @IdProduct " +
+            "AND Amount = @Amount " +
+            "AND CreatedAt < GETDATE()) " +
+            "BEGIN " +
+            "SELECT 1 " +
+            "END " +
+            "ELSE " +
+            "BEGIN " +
+            "SELECT 2 " +
+            "END";
 
-                    return result;
-                }
-            }
+            command.Parameters.AddWithValue("@IdProduct", warehouse.IdProduct);
+            command.Parameters.AddWithValue("@Amount", warehouse.Amount);
+
+            var queryResult = await command.ExecuteScalarAsync();
+
+            var result = (int)queryResult == 1;
+
+            return result;
         }
 
-
-                
-
-
-        public bool VerifyExistingProduct(Warehouse warehouse)
+        public async Task<bool> VerifyExistingProduct(Warehouse warehouse)
         {
-            using (var connection = new SqlConnection(_configuration["ConnectionStrings:DefaultConnection"]))
-            {
-                using (var command = new SqlCommand())
-                {
+            await using var connection = new SqlConnection(_configuration["ConnectionStrings:DefaultConnection"]);
 
-                    //Sprawdz czy produkt o podanym id istnieje 
+            await connection.OpenAsync();
 
-                    command.Connection = connection;
+            await using var command = new SqlCommand();
 
-                    command.CommandText = " IF EXISTS " +
-                    "(select * from [ApbdAsync].[dbo].[Product] where IdProduct = @IdProduct) " +
-                    "BEGIN   " +
-                    "SELECT 1 " +
-                    "END " +
-                    "ELSE " +
-                    "BEGIN    " +
-                    "SELECT 2 " +
-                    "END";
+            command.Connection = connection;
 
-                    command.Parameters.AddWithValue("@IdProduct", warehouse.IdProduct);
+            command.CommandText = " IF EXISTS " +
+            "(select * from [ApbdAsync].[dbo].[Product] where IdProduct = @IdProduct) " +
+            "BEGIN   " +
+            "SELECT 1 " +
+            "END " +
+            "ELSE " +
+            "BEGIN    " +
+            "SELECT 2 " +
+            "END";
 
-                    var queryResult = (int)command.ExecuteScalar();
+            command.Parameters.AddWithValue("@IdProduct", warehouse.IdProduct);
 
-                    var result = queryResult == 1 ? true : false;
+            var queryResult = await command.ExecuteScalarAsync();
 
-                    return result;
-                }
-            }
+            var result = (int)queryResult == 1;
+
+            return result;
         }
 
-            
-
-            
-        public bool VerifyExistingWarehouse(Warehouse warehouse)
+        public async Task<bool> VerifyExistingWarehouse(Warehouse warehouse)
         {
-            using (var connection = new SqlConnection(_configuration["ConnectionStrings:DefaultConnection"]))
-            {
-                connection.Open();
+            await using var connection = new SqlConnection(_configuration["ConnectionStrings:DefaultConnection"]);
 
-                using (var command = new SqlCommand())
-                {
+            await connection.OpenAsync();
 
-                    //Sprawdz czy magazyn o podanym id istnieje 
+            await using var command = new SqlCommand();
 
-                    command.Connection = connection;
+            command.Connection = connection;
 
-                    command.CommandText = " IF EXISTS " +
-                    "(select * from [ApbdAsync].[dbo].[Warehouse] where IdWarehouse = @IdWarehouse) " +
-                    "BEGIN " +
-                    " SELECT 1 " +
-                    "END " +
-                    "ELSE " +
-                    "BEGIN " +
-                    "SELECT 2 " +
-                    "END";
+            command.CommandText = " IF EXISTS " +
+            "(select * from [ApbdAsync].[dbo].[Warehouse] where IdWarehouse = @IdWarehouse) " +
+            "BEGIN " +
+            " SELECT 1 " +
+            "END " +
+            "ELSE " +
+            "BEGIN " +
+            "SELECT 2 " +
+            "END";
 
-                    command.Parameters.AddWithValue("@IdWarehouse", warehouse.IdWarehouse);
+            command.Parameters.AddWithValue("@IdWarehouse", warehouse.IdWarehouse);
 
-                    var queryResult = (int)command.ExecuteScalar();
+            var queryResult = await command.ExecuteScalarAsync();
 
-                    var result = queryResult == 1 ? true : false;
+            var result = (int)queryResult == 1;
 
-                    return result;
-
-                }
-            }
+            return result;
         }
 
-
-
-
-
-        //Aktualizujemy kolumnę FullfilledAt zamówienia na aktualną datę
-
-        private void UpdateFullfilledAt(DateTime createdAt, decimal orderId)  
+        private async void UpdateFullfilledAt(DateTime createdAt, decimal orderId)  
         {
+            await using var connection = new SqlConnection(_configuration["ConnectionStrings:DefaultConnection"]);
 
-            using (var connection = new SqlConnection(_configuration["ConnectionStrings:DefaultConnection"]))
-            {
-                connection.Open();
+            await connection.OpenAsync();
 
+            await using var command = new SqlCommand();
+            command.Connection = connection;
 
-                using (var command = new SqlCommand())
-                {
-                    command.Connection = connection;
+            command.CommandText = "UPDATE [ApbdAsync].[dbo].[Order] set FulfilledAt = @createdAt where IdOrder = @orderId";
 
-                    command.CommandText = "UPDATE [ApbdAsync].[dbo].[Order] set FulfilledAt = @IdProduct where IdOrder = @orderId";
+            command.Parameters.AddWithValue("@createdAt", createdAt);
+            command.Parameters.AddWithValue("@orderId", orderId);
 
-                    command.Parameters.AddWithValue("@createdAt", createdAt);
-                    command.Parameters.AddWithValue("@orderId", orderId);
+            await command.ExecuteNonQueryAsync();
 
-                    var result = (int)command.ExecuteScalar();
-
-                    Console.WriteLine("UpdateFullfilledAt executed");
-                }
-            }
+            Console.WriteLine("UpdateFullfilledAt executed");
 
         }
 
-
-
-
-
-        public decimal InsertNewOrder(Warehouse warehouse)
+        public async Task<decimal> InsertNewOrder(Warehouse warehouse)
         {
-            using (var connection = new SqlConnection(_configuration["ConnectionStrings:DefaultConnection"]))
-            {
-                connection.Open();
+            await using var connection = new SqlConnection(_configuration["ConnectionStrings:DefaultConnection"]);
 
-                using (var command = new SqlCommand())
-                {
-                    command.Connection = connection;
+            await connection.OpenAsync();
 
-                    command.CommandText = "INSERT INTO[ApbdAsync].[dbo].[Order]([IdProduct], [Amount], [CreatedAt], [FulfilledAt]) " +
-                        "VALUES(@IdProduct, @Amount, @CreatedAt, null); " +
-                        "SELECT SCOPE_IDENTITY()";
+            await using var command = new SqlCommand();
 
-                    command.Parameters.AddWithValue("@IdProduct", warehouse.IdProduct);
-                    command.Parameters.AddWithValue("@Amount", warehouse.Amount);
-                    command.Parameters.AddWithValue("@CreatedAt", warehouse.CreatedAt);
+            command.Connection = connection;
 
-                    var orderIdentity = (decimal)command.ExecuteScalar();
+            command.CommandText = "INSERT INTO[ApbdAsync].[dbo].[Order]([IdProduct], [Amount], [CreatedAt], [FulfilledAt]) " +
+                "VALUES(@IdProduct, @Amount, @CreatedAt, null); " +
+                "SELECT SCOPE_IDENTITY()";
 
-                    Console.WriteLine("123123: " + orderIdentity);
-
-                    UpdateFullfilledAt(warehouse.CreatedAt, orderIdentity);
+            command.Parameters.AddWithValue("@IdProduct", warehouse.IdProduct);
+            command.Parameters.AddWithValue("@Amount", warehouse.Amount);
+            command.Parameters.AddWithValue("@CreatedAt", warehouse.CreatedAt);
 
 
-                    command.CommandText = "select [Price] from [ApbdAsync].[dbo].[Product] where [IdProduct] = @IdProduct";
+            var orderIdentity = await command.ExecuteScalarAsync();
 
-                    command.Parameters.AddWithValue("@IdProduct", warehouse.IdProduct);
+            UpdateFullfilledAt(warehouse.CreatedAt, (decimal)orderIdentity);
 
-                    var productPrice = (decimal)command.ExecuteScalar();
+            command.CommandText = "select [Price] from [ApbdAsync].[dbo].[Product] where [IdProduct] = @IdProduct";
 
-                      
+            var productPrice = await command.ExecuteScalarAsync();
 
-                    command.CommandText = "INSERT INTO [ApbdAsync].[dbo].[Product_Warehouse] ([IdWarehouse],[IdProduct],[IdOrder],[Amount],[Price],[CreatedAt]) " +
-                        "VALUES (@IdWarehouse, @IdProduct,@IdOrder,@Amount,@Price,@CreatedAt); " +
-                        "SELECT SCOPE_IDENTITY()";
+            command.CommandText = "INSERT INTO [ApbdAsync].[dbo].[Product_Warehouse] ([IdWarehouse],[IdProduct],[IdOrder],[Amount],[Price],[CreatedAt]) " +
+                "VALUES (@IdWarehouse, @IdProduct,@IdOrder,@Amount,@Price,@CreatedAt); " +
+                "SELECT SCOPE_IDENTITY()";
 
-                    command.Parameters.AddWithValue("@IdWarehouse", warehouse.IdWarehouse);
-                    command.Parameters.AddWithValue("@IdProduct", warehouse.IdProduct);
-                    command.Parameters.AddWithValue("@IdOrder", orderIdentity);
-                    command.Parameters.AddWithValue("@Amount", warehouse.Amount);
-                    command.Parameters.AddWithValue("@Price", warehouse.Amount * productPrice);
-                    command.Parameters.AddWithValue("@CreatedAt", warehouse.CreatedAt);
+            command.Parameters.AddWithValue("@IdWarehouse", warehouse.IdWarehouse);
+            command.Parameters.AddWithValue("@IdOrder", orderIdentity);
+            command.Parameters.AddWithValue("@Price", warehouse.Amount * (decimal)productPrice);
 
-                    //Ma zwrócić idProduct_Warehouse
+            var idProductWarehouse = await command.ExecuteScalarAsync();
 
-                    var idProductWarehouse = (decimal)command.ExecuteScalar();
 
-                    return idProductWarehouse;
-                }
-            }   
+
+            return (decimal)idProductWarehouse;
         }
     }
 }

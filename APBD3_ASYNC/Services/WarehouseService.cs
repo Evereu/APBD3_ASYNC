@@ -15,14 +15,15 @@ namespace APBD3_ASYNC.Services
 
         }
             
-        public string AddNewProductQuery(Warehouse warehouse)  
+        public async Task<string> AddNewProductQuery(Warehouse warehouse)  
         {
-
-            if (_repository.VerifyExistingProduct(warehouse) && _repository.VerifyExistingWarehouse(warehouse))
+            if (await _repository.VerifyExistingProduct(warehouse) && await _repository.VerifyExistingWarehouse(warehouse))
             {
-                if(_repository.VerifyExistingOrder(warehouse) == false && _repository.VerifyCompletedOrders(warehouse))
+                if(await _repository.VerifyExistingOrder(warehouse) == false && await _repository.IsThatCompletedOrdersExist(warehouse))
                 {
-                   return _repository.InsertNewOrder(warehouse).ToString();
+                    var result = await _repository.InsertNewOrder(warehouse);
+
+                    return "Wartość klucza z Product_Warehouse: " + result.ToString();
                 }
                 else
                 {

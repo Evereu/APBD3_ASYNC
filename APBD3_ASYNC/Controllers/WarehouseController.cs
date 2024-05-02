@@ -16,7 +16,7 @@ namespace APBD3_ASYNC.Controllers
         }   
 
         [HttpPost]
-        public IActionResult AddNewProduct(Warehouse warehouse)
+        public async Task<IActionResult> AddNewProduct(Warehouse warehouse)
         {
 
             //walidacja czy ilość przekazana w żądaniu jest większa od 0
@@ -26,7 +26,7 @@ namespace APBD3_ASYNC.Controllers
                 return BadRequest("Amount musi być większe od zera");
             }
 
-             var result = _warehouseService.AddNewProductQuery(warehouse);
+             var result = await _warehouseService.AddNewProductQuery(warehouse);
 
             return Ok(result);
         }
