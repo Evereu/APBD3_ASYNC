@@ -175,7 +175,7 @@ namespace APBD3_ASYNC.Repository
 
         //Aktualizujemy kolumnę FullfilledAt zamówienia na aktualną datę
 
-        public void UpdateFullfilledAt(DateTime createdAt, decimal orderId)  
+        private void UpdateFullfilledAt(DateTime createdAt, decimal orderId)  
         {
 
             using (var connection = new SqlConnection(_configuration["ConnectionStrings:DefaultConnection"]))

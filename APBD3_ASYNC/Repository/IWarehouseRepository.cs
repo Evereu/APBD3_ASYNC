@@ -10,6 +10,6 @@ namespace APBD3_ASYNC.Repository
         bool VerifyExistingWarehouse(Warehouse warehouse);
 
         decimal InsertNewOrder(Warehouse warehouse);
-        void UpdateFullfilledAt();
+
     }
 }

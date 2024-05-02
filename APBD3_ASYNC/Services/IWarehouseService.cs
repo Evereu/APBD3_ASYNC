@@ -4,6 +4,6 @@ namespace APBD3_ASYNC.Services
 {
     public interface IWarehouseService
     {
-        void AddNewProduct(Warehouse warehouse);
+        string AddNewProductQuery(Warehouse warehouse);
     }
 }

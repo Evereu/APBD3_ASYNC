@@ -14,24 +14,24 @@ namespace APBD3_ASYNC.Services
             _repository = warehouseRepository;
 
         }
-
-        public void AddNewProduct(Warehouse warehouse)  
+            
+        public string AddNewProductQuery(Warehouse warehouse)  
         {
 
             if (_repository.VerifyExistingProduct(warehouse) && _repository.VerifyExistingWarehouse(warehouse))
             {
                 if(_repository.VerifyExistingOrder(warehouse) == false && _repository.VerifyCompletedOrders(warehouse))
                 {
-                    _repository.InsertNewOrder(warehouse);
+                   return _repository.InsertNewOrder(warehouse).ToString();
                 }
                 else
                 {
-                    //print - order istnieje
+                    return "Taki order już istnieje";
                 }
             }
             else
             {
-                // print - tu ma zwracać że nie istnieje dany magazyn lub produkt
+                return "magazyn lub produkt nie istnieje";
             }
         }
     }

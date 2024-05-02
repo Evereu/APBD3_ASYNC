@@ -26,7 +26,7 @@ namespace APBD3_ASYNC.Controllers
                 return BadRequest("Amount musi być większe od zera");
             }
 
-             var result = _warehouseService.AddNewProduct(warehouse);
+             var result = _warehouseService.AddNewProductQuery(warehouse);
 
             return Ok(result);
         }
