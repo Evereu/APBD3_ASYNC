@@ -1,3 +1,6 @@
+using APBD3_ASYNC.Repository;
+using APBD3_ASYNC.Services;
+
 namespace APBD3_ASYNC
 {
     public class Program
@@ -10,6 +13,11 @@ namespace APBD3_ASYNC
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+
+            builder.Services.AddScoped<IWarehouseRepository, WarehouseRepository>();
+            builder.Services.AddScoped<IWarehouseService, WarehouseService>();
+
+
             var app = builder.Build();
 
             if (app.Environment.IsDevelopment())
@@ -17,6 +25,8 @@ namespace APBD3_ASYNC
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
+            
 
             app.UseHttpsRedirection();
 
