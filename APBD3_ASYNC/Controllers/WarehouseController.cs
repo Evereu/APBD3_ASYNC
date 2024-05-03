@@ -13,9 +13,9 @@ namespace APBD3_ASYNC.Controllers
         public WarehouseController(IWarehouseService warehouseService)
         {
             _warehouseService = warehouseService;
-        }   
+        }
 
-        [HttpPost]
+        [HttpPost("AddNewProduct")]
         public async Task<IActionResult> AddNewProduct(Warehouse warehouse)
         {
 
@@ -30,6 +30,15 @@ namespace APBD3_ASYNC.Controllers
 
             return Ok(result);
         }
+
+        [HttpPost("AddNewProductByProcedure")]
+        public async Task<IActionResult> AddNewProductByProcedure(Warehouse warehouse)
+        {
+            var result = await _warehouseService.AddNewProductByProcedure(warehouse);
+
+            return Ok(result);
+        }
+
 
     }
 }

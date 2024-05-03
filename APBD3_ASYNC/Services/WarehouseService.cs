@@ -35,5 +35,16 @@ namespace APBD3_ASYNC.Services
                 return "magazyn lub produkt nie istnieje";
             }
         }
+
+
+        public async Task<string> AddNewProductByProcedure(Warehouse warehouse)  
+        {
+            var result = await _repository.ExecStoredProcedure(warehouse);
+
+            return result;
+
+        }
+
+
     }
 }

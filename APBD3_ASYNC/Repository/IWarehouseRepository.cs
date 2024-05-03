@@ -9,6 +9,7 @@ namespace APBD3_ASYNC.Repository
         Task<bool> VerifyExistingProduct(Warehouse warehouse);
         Task<bool> VerifyExistingWarehouse(Warehouse warehouse);
         Task<decimal> InsertNewOrder(Warehouse warehouse);
+        Task<string> ExecStoredProcedure(Warehouse warehouse);
 
     }
 }

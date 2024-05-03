@@ -1,5 +1,6 @@
 ﻿using APBD3_ASYNC.Models;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Reflection.Emit;
 
@@ -198,6 +199,34 @@ namespace APBD3_ASYNC.Repository
 
 
             return (decimal)idProductWarehouse;
+        }
+
+        public async Task<string> ExecStoredProcedure(Warehouse warehouse)
+        {
+            try
+            {
+                await using var connection = new SqlConnection(_configuration["ConnectionStrings:DefaultConnection"]);
+
+                await using var command = new SqlCommand("AddProductToWarehouse", connection)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+
+                command.Parameters.AddWithValue("@IdProduct", warehouse.IdProduct);
+                command.Parameters.AddWithValue("@IdWarehouse", warehouse.IdWarehouse);
+                command.Parameters.AddWithValue("@Amount", warehouse.Amount);
+                command.Parameters.AddWithValue("@CreatedAt", warehouse.CreatedAt);
+
+                await connection.OpenAsync();
+
+                var result = await command.ExecuteScalarAsync();
+
+                return result.ToString();
+
+            }catch (Exception ex)
+            {
+                return ex.ToString();
+            }
         }
     }
 }
